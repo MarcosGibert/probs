@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probabilidad: Prefijo Consecutivo</title>
+    <link rel="icon" type="image/png" href="icono.png">
+    <link rel="apple-touch-icon" href="icono.png">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #0f172a;
+            --border: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 { text-align: center; color: var(--primary); margin-top: 0; }
+        
+        .section-title {
+            font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;
+            color: #64748b; margin-top: 1.5rem; border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 5px; margin-bottom: 15px; font-weight: 700;
+        }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { margin-bottom: 5px; }
+        label { display: block; font-size: 0.9rem; margin-bottom: 5px; font-weight: 600; }
+        
+        input, select {
+            width: 100%; padding: 12px; border: 1px solid var(--border);
+            border-radius: 8px; font-size: 1rem; box-sizing: border-box;
+            background: #f8fafc; transition: all 0.2s;
+        }
+        input:focus, select:focus {
+            outline: none; border-color: var(--primary); background: #fff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        /* TOGGLE SWITCH MEJORADO */
+        .consecutive-box {
+            grid-column: span 2; background: #f0f9ff; padding: 12px;
+            border-radius: 10px; border: 1px solid #bae6fd;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .toggle-text b { color: var(--primary); display: block; }
+        .toggle-text span { font-size: 0.8rem; color: #64748b; }
+
+        .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1; transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        button {
+            width: 100%; background: var(--primary); color: white; border: none;
+            padding: 16px; font-size: 1.1rem; font-weight: 700; border-radius: 10px;
+            cursor: pointer; margin-top: 25px; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.4);
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        button:active { transform: scale(0.98); box-shadow: none; }
+
+        #result-area {
+            margin-top: 25px; padding: 20px; border-radius: 12px;
+            text-align: center; background: #fff; border: 2px solid #f1f5f9;
+            display: none;
+        }
+        .percentage { font-size: 3.5rem; font-weight: 800; color: var(--text); line-height: 1; margin: 10px 0; }
+        .fraction { font-size: 1.1rem; color: #64748b; font-weight: 500; }
+        .logic-explain { font-size: 0.85rem; color: var(--primary); margin-top: 10px; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎯 Calculadora Probabilidad</h1>
+
+    <div class="section-title">1. Configuración</div>
+    <div class="grid">
+        <div class="form-group">
+            <label>Población Total (N)</label>
+            <input type="number" id="inputN" value="10">
+        </div>
+        <div class="form-group">
+            <label>Bolas Blancas (M)</label>
+            <input type="number" id="inputM" value="5">
+        </div>
+        <div class="form-group">
+            <label>Tamaño Muestra (n)</label>
+            <input type="number" id="inputI" value="3">
+        </div>
+        <div class="form-group">
+            <label>Reposición</label>
+            <select id="inputRepo">
+                <option value="false">Sin Reposición</option>
+                <option value="true">Con Reposición</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="consecutive-box">
+        <div class="toggle-text">
+            <b>Modo Orden Estricto</b>
+            <span>Las primeras k bolas deben ser blancas</span>
+        </div>
+        <label class="switch">
+            <input type="checkbox" id="inputConsecutive">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="section-title">2. Condición de Victoria</div>
+    <div class="grid">
+        <div class="form-group">
+            <label>Tipo de Acierto</label>
+            <select id="inputCondition">
+                <option value="atLeast">Al menos ( ≥ k )</option>
+                <option value="equal">Exactamente ( = k )</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Bolas Blancas (k)</label>
+            <input type="number" id="inputK" value="2">
+        </div>
+    </div>
+
+    <div class="form-group" style="margin-top: 15px;">
+        <label>Intentos / Repeticiones (j)</label>
+        <input type="number" id="inputJ" value="1" min="1">
+    </div>
+
+    <button onclick="calculate()">Calcular</button>
+
+    <div id="result-area">
+        <div class="fraction" id="resSummary"></div>
+        <div class="percentage" id="resPercent">0%</div>
+        <div class="fraction" id="resOneIn">1 entre X</div>
+        <div class="logic-explain" id="resExplain"></div>
+    </div>
+</div>
+
+<script>
+    // --- LÓGICA MATEMÁTICA PURA ---
+
+    function combinations(n, k) {
+        if (k < 0 || k > n) return 0;
+        if (k === 0 || k === n) return 1;
+        if (k > n / 2) k = n - k;
+        let res = 1;
+        for (let i = 1; i <= k; i++) res = res * (n - i + 1) / i;
+        return res;
+    }
+
+    // --- CÁLCULO ESTÁNDAR (NO IMPORTA EL ORDEN) ---
+    function calculateStandard(N, M, n, k, withRep, condition) {
+        let prob = 0;
+        
+        // Función auxiliar binomial/hipergeométrica
+        const getProbX = (x) => {
+            if (withRep) {
+                // Binomial
+                return combinations(n, x) * Math.pow(M/N, x) * Math.pow(1 - M/N, n - x);
+            } else {
+                // Hipergeométrica
+                const num = combinations(M, x) * combinations(N - M, n - x);
+                const den = combinations(N, n);
+                return den === 0 ? 0 : num / den;
+            }
+        };
+
+        if (condition === 'equal') {
+            prob = getProbX(k);
+        } else {
+            // Al menos k (sumamos de k hasta n)
+            for (let x = k; x <= n; x++) {
+                prob += getProbX(x);
+            }
+        }
+        return prob;
+    }
+
+    // --- CÁLCULO CONSECUTIVO (PREFIJO) ---
+    // Interpretación: "Las PRIMERAS k bolas son blancas"
+    function calculatePrefix(N, M, n, k, withRep, condition) {
+        let prob = 1;
+
+        // 1. Calculamos la probabilidad de que las primeras k sean blancas
+        // P(1ª es B) * P(2ª es B | 1ª fue B) ...
+        for (let i = 0; i < k; i++) {
+            if (withRep) {
+                prob *= (M / N);
+            } else {
+                prob *= (M - i) / (N - i);
+            }
+        }
+
+        // 2. Si la condición es "AL MENOS", aquí paramos.
+        // ¿Por qué? Porque si las primeras k son blancas, ya hemos cumplido. 
+        // No nos importa qué pasa con las bolas restantes (de k+1 a n).
+        if (condition === 'atLeast') {
+            return prob; 
+        }
+
+        // 3. Si la condición es "EXACTAMENTE", el resto deben ser NO blancas.
+        // Multiplicamos por la probabilidad de que las (n-k) restantes sean Negras.
+        const remainingDraws = n - k;
+        
+        for (let i = 0; i < remainingDraws; i++) {
+            if (withRep) {
+                prob *= (1 - M / N); // Probabilidad de Negra constante
+            } else {
+                // Las Blancas disminuyeron en k, las Totales en (k + i)
+                // Quedan (N - M) negras originales.
+                // Quedan (N - k - i) bolas totales en este paso.
+                prob *= (N - M) / (N - k - i);
+            }
+        }
+
+        return prob;
+    }
+
+    function calculate() {
+        // Inputs
+        const N = parseInt(document.getElementById('inputN').value);
+        const M = parseInt(document.getElementById('inputM').value);
+        const n = parseInt(document.getElementById('inputI').value);
+        const k = parseInt(document.getElementById('inputK').value);
+        const j = parseInt(document.getElementById('inputJ').value);
+        const withRep = document.getElementById('inputRepo').value === 'true';
+        const condition = document.getElementById('inputCondition').value;
+        const isConsecutive = document.getElementById('inputConsecutive').checked;
+
+        // Validaciones de seguridad
+        if (M > N) return alert("Error: Hay más blancas que totales.");
+        if (k > n) return alert("Error: Buscas más blancas de las que sacas.");
+        if (!withRep && n > N) return alert("Error: Sacas más bolas de las que existen.");
+
+        let pSingle = 0;
+        let explainText = "";
+
+        if (isConsecutive) {
+            pSingle = calculatePrefix(N, M, n, k, withRep, condition);
+            explainText = condition === 'atLeast' 
+                ? `Probabilidad de que las primeras ${k} sean blancas (el resto da igual).`
+                : `Probabilidad de que las primeras ${k} sean blancas y el resto NO.`;
+        } else {
+            pSingle = calculateStandard(N, M, n, k, withRep, condition);
+            explainText = condition === 'atLeast'
+                ? `Probabilidad de encontrar ${k} o más blancas en cualquier orden.`
+                : `Probabilidad de encontrar exactamente ${k} blancas en cualquier orden.`;
+        }
+
+        // Persistencia (J intentos) -> P(total) = 1 - (1 - p)^j
+        const pTotal = 1 - Math.pow(1 - pSingle, j);
+
+        // Renderizado
+        const resDiv = document.getElementById('result-area');
+        resDiv.style.display = 'block';
+
+        let percent = (pTotal * 100).toFixed(4);
+        if (pTotal > 0.10) percent = (pTotal * 100).toFixed(2);
+        
+        document.getElementById('resPercent').textContent = percent + "%";
+        
+        let oneIn = pTotal > 0 ? (1 / pTotal).toLocaleString(undefined, {maximumFractionDigits: 1}) : "Infinito";
+        document.getElementById('resOneIn').textContent = `1 entre ${oneIn}`;
+        
+        const context = j > 1 ? `Tras ${j} intentos:` : "En un único intento:";
+        document.getElementById('resSummary').textContent = context;
+        document.getElementById('resExplain').textContent = explainText;
+    }
+</script>
+
+</body>
+</html>
