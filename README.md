@@ -62,16 +62,3 @@ After pressing **Calcular**, the app computes the probability for one attempt an
 
 This was built as a small personal learning project to make probability scenarios easier to explore interactively. The goal is to turn abstract formulas into a simple interface where changing one value immediately changes the interpretation of the result.
 
-## Limitations
-
-- Very large inputs can run into JavaScript number precision limits.
-- The current UI is Spanish-only.
-- Input validation focuses on the main invalid cases and could be expanded for empty, zero, or negative values.
-
-## Possible Improvements
-
-- Add a language toggle for Spanish and English.
-- Add examples for common probability scenarios.
-- Show the exact formula used for the selected configuration.
-- Add automated tests for edge cases.
-- Add a short explanation panel that changes with the selected probability mode.
