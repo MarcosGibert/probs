@@ -34,24 +34,6 @@ The calculator uses different models depending on the selected configuration:
 - CSS
 - JavaScript
 
-## Running Locally
-
-Clone the repository and open `index.html` in a browser:
-
-```bash
-git clone https://github.com/MarcosGibert/probs.git
-cd probs
-open index.html
-```
-
-You can also serve the folder locally:
-
-```bash
-python3 -m http.server 8000
-```
-
-Then visit `http://localhost:8000`.
-
 ## How It Works
 
 Enter the total population size, the number of white balls, the sample size, and the target number of white balls. Then choose whether the draw is performed with replacement, whether the target should be exact or minimum, and whether order should matter.
